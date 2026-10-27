@@ -1,0 +1,96 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "slino",
+  "version": "1.0.0",
+  "description": "Read, create, and organize Pages, Types, and Views in your Slino workspace.",
+  "author": {
+    "name": "Slino",
+    "email": "support@slino.app",
+    "url": "https://slino.app"
+  },
+  "homepage": "https://slino.app",
+  "repository": "https://github.com/slino-dev/slino-plugin-ai",
+  "license": "MIT",
+  "keywords": ["notes", "tasks", "projects", "knowledge base", "workspace", "productivity"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Slino",
+        "shortDescription": "Your shared AI workspace",
+        "longDescription": "Slino is a workspace for notes, tasks, projects, and knowledge that you and your AI keep together. Ask to save a conversation as a Page, turn a plan into tasks, set up a tracker with a board and a table, or find and update what you wrote before. Changes appear in the Slino app, where you browse and edit the same Pages, with full version history and a reversible trash.\n\nSlino reads and changes only the workspaces your connected account belongs to, with that account's permissions. It never deletes permanently: trashed Pages can be restored. A free Slino account is required.",
+        "developerName": "Slino",
+        "category": "Productivity",
+        "capabilities": ["Search Pages", "Read Pages", "Create and update Pages", "Organize with Types and Views", "Upload and read files"],
+        "websiteURL": "https://slino.app",
+        "supportURL": "https://slino.app/support",
+        "privacyPolicyURL": "https://slino.app/privacy",
+        "termsOfServiceURL": "https://slino.app/terms",
+        "defaultPrompt": [
+          "Save the key points of this chat to Slino.",
+          "Set up a task tracker in Slino for my project.",
+          "What did I note in Slino about this topic?"
+        ],
+        "brandColor": "#0A0A0A",
+        "brandColorDark": "#E5E5E5",
+        "composerIcon": "./assets/icon.png",
+        "composerIconDark": "./assets/icon-dark.png",
+        "logo": "./assets/logo.png",
+        "logoDark": "./assets/logo-dark.png"
+      },
+      "onboardingSkill": "./skills/slino/SKILL.md",
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Browse the workspace",
+              "prompt": "What's in my Slino workspace?",
+              "tools_triggered": "list_workspaces, query_pages",
+              "expected_behavior": "Lists the top-level Pages of the reviewer workspace, including Website launch and Reading list, each linked to its Slino URL."
+            },
+            {
+              "description": "Capture notes as a new Page",
+              "prompt": "Save these meeting notes to Slino under Website launch: we ship on Friday, Ana owns the launch email, and the pricing page needs review.",
+              "tools_triggered": "query_pages, create_pages",
+              "expected_behavior": "Creates one text Page under the Website launch Page with the three points as Markdown and returns its link."
+            },
+            {
+              "description": "Update a task's status",
+              "prompt": "Mark the Write launch email task in Slino as done.",
+              "tools_triggered": "list_types, query_pages, patch_pages",
+              "expected_behavior": "Finds the Write launch email task and sets its Status to Done using the Done option ID; the change shows in the app."
+            },
+            {
+              "description": "Create a tracker with a board",
+              "prompt": "Create a reading tracker in Slino for three books I want to read: Dune, Piranesi, and Middlemarch, with a board by status.",
+              "tools_triggered": "list_types, create_types, create_pages, create_views",
+              "expected_behavior": "Reuses or creates a Book Type with a Status Select, creates a views Page holding the three books, and adds a board View grouped by Status."
+            },
+            {
+              "description": "Show Pages visually",
+              "prompt": "Show me my Reading list in Slino.",
+              "tools_triggered": "query_pages, show_pages",
+              "expected_behavior": "Finds the Reading list Page and renders it with the Slino widget."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unrelated request",
+              "prompt": "What's the weather in Rome today?"
+            },
+            {
+              "description": "General writing with no workspace intent",
+              "prompt": "Write me a short poem about autumn."
+            },
+            {
+              "description": "Bulk permanent deletion",
+              "prompt": "Permanently delete everything in my Slino workspace."
+            }
+          ]
+        }
+      },
+      "publication": {
+        "countries": []
+      }
+    }
+  }
+}
