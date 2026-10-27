@@ -1,0 +1,22 @@
+{
+  "name": "slino",
+  "version": "1.0.0",
+  "description": "Read, create, and organize Pages, Types, and Views in your Slino workspace.",
+  "author": {
+    "name": "Slino",
+    "email": "support@slino.app",
+    "url": "https://slino.app"
+  },
+  "homepage": "https://slino.app",
+  "repository": "https://github.com/slino-dev/slino-plugin-ai",
+  "license": "MIT",
+  "keywords": [
+    "notes",
+    "tasks",
+    "projects",
+    "knowledge base",
+    "workspace",
+    "productivity"
+  ],
+  "privacyPolicyUrl": "https://slino.app/privacy"
+}
