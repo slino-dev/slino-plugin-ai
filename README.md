@@ -13,17 +13,12 @@ The plugin contains:
 ## Install
 
 Find **Slino** in your app's plugin or connector directory and select Add or
-Connect. Before a listing is available in your app, add the server yourself:
+Connect. Until it's listed there, add `https://slino.app/mcp` as a custom MCP
+server: [slino.app/connect](https://slino.app/connect) has the steps for
+ChatGPT, Claude, Grok, Codex, and other apps.
 
-- **ChatGPT**: Settings → Apps → Create, then enter `https://slino.app/mcp`.
-- **Claude**: Settings → Connectors → Add custom connector, then enter
-  `https://slino.app/mcp`.
-- **Grok**: grok.com/connectors → New Connector → Custom, then enter
-  `https://slino.app/mcp`.
-- **Cursor and Grok Bot**: add the plugin from the marketplace.
-
-You need a free Slino account. You can revoke a connection at any time in
-Slino under Settings → Connections.
+You need a free Slino account. You can revoke a connection at any time from
+**Connections** in Slino's workspace menu.
 
 ## What it can do
 
@@ -43,7 +38,8 @@ terms.
 
 ## Support
 
-Email [support@slino.app](mailto:support@slino.app).
+See [slino.app/support](https://slino.app/support) or email
+[support@slino.app](mailto:support@slino.app).
 
 ## Layout
 
