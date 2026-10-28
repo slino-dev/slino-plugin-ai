@@ -70,7 +70,7 @@
             {
               "description": "Update a task's status",
               "prompt": "Mark the Write launch email task in Slino as done.",
-              "tools_triggered": "list_types, query_pages, patch_pages",
+              "tools_triggered": "query_pages, patch_pages",
               "expected_behavior": "Finds the Write launch email task and sets its Status to Done using the Done option ID; the change shows in the app."
             },
             {

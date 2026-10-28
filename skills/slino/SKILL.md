@@ -21,11 +21,28 @@ well.
    (`memberCount` is 1), so private notes don't land where others see them.
    Ask only if that still leaves several or none. Name the workspace you used
    in your reply so the user can redirect you.
-2. Look before creating. Call `list_types`, then `query_pages` with `search`
-   for the subject. Update an existing Page instead of creating a near
-   duplicate.
+2. Look before creating. Call `query_pages` with `search` for the subject.
+   Its result includes the full Types of the Pages it returns, option IDs
+   included, so call `list_types` only when nothing related exists and you
+   need a Type to create Pages with. Update an existing Page instead of
+   creating a near duplicate.
 3. Find the right parent. Tasks belong under their project, lessons under
    their course. Only places people navigate to belong at the top level.
+
+## Fast, precise calls
+
+Each call is a network round trip, so use as few as the task needs.
+
+- Reuse what you already learned in this conversation: workspace, Type,
+  option, and Page IDs. Don't list or query them again.
+- Let the server filter. Use `typeId`, `propertyEquals`, `propertyContains`,
+  `parentId`, `sort`, and a small `limit` instead of fetching broadly and
+  filtering the results yourself.
+- Read bodies only when the task needs the text. Summaries and lists can use
+  `bodyPreview`; `read_pages` takes up to five Pages per call.
+- Make independent reads at the same time when your client allows it.
+- Trust write results. They return each Page's new `version` and `url`; use
+  them for the next patch and your reply instead of querying again.
 
 ## Writing
 
@@ -36,7 +53,7 @@ well.
 - Use a Type when the user will have several Pages of the same kind, such as
   tasks, contacts, or books. Extend an existing Type instead of creating a
   similar one.
-- Select values are option IDs from `list_types`, never labels: send
+- Select values are option IDs from the Type definition, never labels: send
   `{type: "text", value: OPTION_ID}`, or a text list of IDs for multi-select.
   Add a missing choice to the Type with `patch_types` first.
 - Use a relation property when the link should show as a backlink, such as a
@@ -49,8 +66,8 @@ well.
 
 - `VERSION_CONFLICT`: someone else changed the Page. Read it again, reapply
   your change to the new version, and tell the user if the edits overlapped.
-- `INVALID_PROPERTIES`: call `list_types` and match the Type's property keys,
-  kinds, and option IDs.
+- `INVALID_PROPERTIES`: check the Type's property keys, kinds, and option IDs,
+  calling `list_types` if you don't have its current definition.
 - `TYPE_VERSION_CONFLICT`: list the Type again and resend its complete
   `propertyDefinitions`.
 - `TYPE_NAME_TAKEN`: that Type already exists; use it.
