@@ -17,9 +17,10 @@ well.
    the workspace you chose for the rest of the conversation. With one
    workspace, use it. With several, use the one the user names; otherwise
    search the subject in each with `query_pages` and work where related Pages
-   already are; otherwise use the one whose `kind` is `personal`. Ask only if
-   none of these settles it. Name the workspace you used in your reply so
-   the user can redirect you.
+   already are; otherwise use the one where the user is the only member
+   (`memberCount` is 1), so private notes don't land where others see them.
+   Ask only if that still leaves several or none. Name the workspace you used
+   in your reply so the user can redirect you.
 2. Look before creating. Call `list_types`, then `query_pages` with `search`
    for the subject. Update an existing Page instead of creating a near
    duplicate.
