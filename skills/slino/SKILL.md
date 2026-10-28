@@ -13,8 +13,13 @@ well.
 
 ## Before you write
 
-1. Pick the workspace. Call `list_workspaces`; if there is more than one and
-   the user has not named it, ask.
+1. Pick the workspace yourself. Call `list_workspaces` once and keep using
+   the workspace you chose for the rest of the conversation. With one
+   workspace, use it. With several, use the one the user names; otherwise
+   search the subject in each with `query_pages` and work where related Pages
+   already are; otherwise use the user's personal workspace. Ask only if
+   none of these settles it. Name the workspace you used in your reply so
+   the user can redirect you.
 2. Look before creating. Call `list_types`, then `query_pages` with `search`
    for the subject. Update an existing Page instead of creating a near
    duplicate.
