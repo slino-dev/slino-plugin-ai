@@ -11,7 +11,14 @@
   "homepage": "https://slino.app",
   "repository": "https://github.com/slino-dev/slino-plugin-ai",
   "license": "MIT",
-  "keywords": ["notes", "tasks", "projects", "knowledge base", "workspace", "productivity"],
+  "keywords": [
+    "notes",
+    "tasks",
+    "projects",
+    "knowledge base",
+    "workspace",
+    "productivity"
+  ],
   "extensions": {
     "com.openai": {
       "interface": {
@@ -20,7 +27,14 @@
         "longDescription": "Slino is a workspace for notes, tasks, projects, and knowledge that you and your AI keep together. Ask to save a conversation as a Page, turn a plan into tasks, set up a tracker with a board and a table, or find and update what you wrote before. Changes appear in the Slino app, where you browse and edit the same Pages, with full version history and a reversible trash.\n\nSlino reads and changes only the workspaces your connected account belongs to, with that account's permissions. It never deletes permanently: trashed Pages can be restored. A free Slino account is required.",
         "developerName": "Slino",
         "category": "Productivity",
-        "capabilities": ["Search Pages", "Read Pages", "Create and update Pages", "Organize with Types and Views", "Upload and read files"],
+        "capabilities": [
+          "Search Pages",
+          "Read Pages",
+          "Create and update Pages",
+          "Review and restore Page history",
+          "Organize with Types and Views",
+          "Upload and read files"
+        ],
         "websiteURL": "https://slino.app",
         "supportURL": "https://slino.app/support",
         "privacyPolicyURL": "https://slino.app/privacy",

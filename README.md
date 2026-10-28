@@ -24,6 +24,7 @@ You need a free Slino account. You can revoke a connection at any time from
 
 - Search and read Pages and the files they reference.
 - Create and update Pages, Types, and saved Views.
+- See who changed a Page and restore an earlier version from its history.
 - Move Pages to the trash. This is reversible; only you can delete permanently,
   in the Slino app.
 
