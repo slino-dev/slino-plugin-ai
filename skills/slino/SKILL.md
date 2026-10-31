@@ -62,6 +62,32 @@ Each call is a network round trip, so use as few as the task needs.
 - A Page holds either writing or Views. Create collection Pages, boards, and
   dashboards as `kind: "views"`.
 
+## Files
+
+Upload with `upload_files`, then reference the file from a Page body as
+`![alt](/files/FILE_ID)` for images or `[name](/files/FILE_ID)` otherwise, or
+from a file property. Pick the path that keeps the bytes out of your context:
+
+- **The user attached it in ChatGPT**: pass it in `attachedFiles`.
+- **You can run shell commands** and reach the file: ask for a link with
+  `{uploadLink: true}` and send the file with `curl -F file=@PATH UPLOAD_URL`.
+  The command prints the file and its ready-to-insert Markdown.
+- **Only the user has the file**: ask for a link and give the user its
+  `uploadPageUrl`, which works without signing in. Wait until they say it's
+  sent.
+- **A small file you wrote yourself**, under about 100 KB: send it as base64
+  `data`. **A public web file**: send its `url`.
+
+A link takes one file within 30 minutes and reserves its file ID. Before you
+put that ID in a Page, confirm the file arrived with `read_files`.
+
+If `curl` fails with "network unreachable", HTTP 000, or a 403 from a proxy,
+your sandbox blocks the domain in `uploadUrl`. Ask the user to allow it under
+Settings → Capabilities (network egress, additional allowed domains), or give
+them the `uploadPageUrl` instead.
+
+To show the user a file, use its `signedUrl` in your reply, never in a Page.
+
 ## When a call fails
 
 - `VERSION_CONFLICT`: someone else changed the Page. Read it again, reapply
@@ -73,6 +99,8 @@ Each call is a network round trip, so use as few as the task needs.
 - `TYPE_NAME_TAKEN`: that Type already exists; use it.
 - `PAGE_KIND_CONFLICT`: text goes on a text Page and Views on a views Page.
 - `PAGINATION_RESTART_REQUIRED`: query again without the cursor.
+- `UPLOAD_LINK_USED` from an upload link: the file already arrived; use its
+  ID. `UPLOAD_LINK_INVALID`: the link expired; ask for a new one.
 
 Fix the cause and retry once; if it still fails, tell the user what failed.
 
