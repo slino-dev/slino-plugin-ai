@@ -82,9 +82,10 @@ A link takes one file within 30 minutes and reserves its file ID. Before you
 put that ID in a Page, confirm the file arrived with `read_files`.
 
 If `curl` fails with "network unreachable", HTTP 000, or a 403 from a proxy,
-your sandbox blocks the domain in `uploadUrl`. Ask the user to allow it under
-Settings → Capabilities (network egress, additional allowed domains), or give
-them the `uploadPageUrl` instead.
+your sandbox blocks the domain in `uploadUrl`: give the user the
+`uploadPageUrl`. Only in Claude can the user instead allow the domain under
+Settings → Capabilities (network egress, additional allowed domains); ChatGPT's
+sandbox has no such setting.
 
 To show the user a file, use its `signedUrl` in your reply, never in a Page.
 
