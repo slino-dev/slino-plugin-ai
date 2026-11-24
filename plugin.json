@@ -75,9 +75,9 @@
             },
             {
               "description": "Create a tracker with a board",
-              "prompt": "Create a reading tracker in Slino for three books I want to read: Dune, Piranesi, and Middlemarch, with a board by status.",
-              "tools_triggered": "list_types, create_types, create_pages, create_views",
-              "expected_behavior": "Reuses or creates a Book Type with a Status Select, creates a views Page holding the three books, and adds a board View grouped by Status."
+              "prompt": "Create a new reading tracker in Slino called Next Reads. Add The Left Hand of Darkness, Sea of Tranquility, and The Fifth Season as books I want to read. Show a board grouped by status.",
+              "tools_triggered": "query_pages, create_pages, list_views, patch_views",
+              "expected_behavior": "In the seeded reviewer workspace, reuse the existing Book Type and the stable option ID for Want to read. Use list_types if the Book Type is not in the query results. Create Next Reads as a Views Page and add three Book sub-pages. Turn the automatic Sub-pages View into a board filtered to the tracker's Book sub-pages and grouped by the Book Type's Status. All three books appear in the Want to read lane. Return the tracker link."
             },
             {
               "description": "Show Pages visually",
@@ -88,22 +88,23 @@
           ],
           "negative": [
             {
-              "description": "Unrelated request",
+              "description": "Unrelated request. Respond to the weather question using an appropriate source if available. Do not query or change Slino.",
               "prompt": "What's the weather in Rome today?"
             },
             {
-              "description": "General writing with no workspace intent",
+              "description": "General writing with no workspace intent. Write the poem in the chat. Do not read from Slino or save the poem unless the user asks.",
               "prompt": "Write me a short poem about autumn."
             },
             {
-              "description": "Bulk permanent deletion",
+              "description": "Bulk permanent deletion. Explain that Slino's plugin can move Pages to reversible Trash and permanent deletion is only available in Slino. Do not call a write tool or substitute a bulk trash operation.",
               "prompt": "Permanently delete everything in my Slino workspace."
             }
           ]
         }
       },
       "publication": {
-        "countries": []
+        "countries": [],
+        "release_notes": "Initial release for ChatGPT and Codex. Search, save, and update Slino Pages, build trackers with live Views, and keep project notes in an Overview tab."
       }
     }
   }

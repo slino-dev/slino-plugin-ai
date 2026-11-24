@@ -13,18 +13,17 @@ well.
 
 ## Before you write
 
-1. Pick the workspace yourself. Call `list_workspaces` once and keep using
-   the workspace you chose for the rest of the conversation. With one
-   workspace, use it. With several, use the one the user names; otherwise
-   search the subject in each with `query_pages` and work where related Pages
-   already are; otherwise use the one where the user is the only member
-   (`memberCount` is 1), so private notes don't land where others see them.
-   Ask only if that still leaves several or none. Name the workspace you used
-   in your reply so the user can redirect you.
+1. Call `list_workspaces` once and reuse the result. If the user names a
+   workspace, use it. If it is unavailable, explain that and ask where to
+   work before making changes. With no named workspace, use the only available
+   one, or search for the subject with `query_pages` and use the workspace
+   with related Pages. If that still leaves a choice, prefer the workspace
+   where the user is the only member (`memberCount` is 1). Ask if you still
+   cannot pick one. Name the workspace you used in your reply.
 2. Look before creating. Call `query_pages` with `search` for the subject.
-   Its result includes the full Types of the Pages it returns, option IDs
-   included, so call `list_types` only when nothing related exists and you
-   need a Type to create Pages with. Update an existing Page instead of
+   Its result includes the full Types of the Pages it returns, with option
+   IDs. If you need a Type and the results do not include a suitable one, call
+   `list_types` before creating a Type. Update an existing Page instead of
    creating a near duplicate.
 3. Find the right parent. Tasks belong under their project, lessons under
    their course. Only places people navigate to belong at the top level.
@@ -59,8 +58,30 @@ Each call is a network round trip, so use as few as the task needs.
 - Use a relation property when the link should show as a backlink, such as a
   task's project. Use a body link `[title](/pages/PAGE_ID)` for a mention in
   text.
-- A Page holds either writing or Views. Create collection Pages, boards, and
-  dashboards as `kind: "views"`.
+
+## Text Pages and Views Pages
+
+- Use `kind: "text"` for writing such as notes, runbooks, and Task checklists.
+  A text Page can have sub-pages.
+- Use `kind: "views"` for a collection or dashboard that shows live results.
+  Put the writing on a separate text Page and use a `page` layout to show it
+  as a tab beside a table, list, or board.
+
+For a launch tracker, create a Views Page and put the checklists in text
+sub-pages with the Task Type. Add a text sub-page called **Overview** for
+shared decisions. Call `list_views` after adding the sub-pages. If Slino
+already added a **Sub-pages** View, use `patch_views` with its current version
+to turn it into the **Launches** table. Otherwise create the table with
+`create_views`. Filter by the parent Page and Task Type so the Overview stays
+out of the table. Show the Task Type's Status property so the table reads
+status directly from each Task. Add an **Overview** tab with `create_views`
+using `presentation: {layout: "page", pageId: OVERVIEW_ID, properties: []}`.
+
+To convert a text Page into a Views Page through MCP, first save and verify
+its Markdown in a text sub-page. Then use `patch_pages` with the original
+Page's current `expectedVersion`, `kind: "views"`, and `body: ""`. Configure
+its Views as above. If you get a version conflict, check the original Page
+for new writing and preserve it in the sub-page before retrying.
 
 ## Files
 
