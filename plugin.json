@@ -64,46 +64,47 @@
             {
               "description": "Capture notes as a new Page",
               "prompt": "Save these meeting notes to Slino under Website launch: we ship on Friday, Ana owns the launch email, and the pricing page needs review.",
-              "tools_triggered": "query_pages, create_pages",
+              "tools_triggered": "list_workspaces, query_pages, create_pages",
               "expected_behavior": "Creates one text Page under the Website launch Page with the three points as Markdown and returns its link."
             },
             {
               "description": "Update a task's status",
               "prompt": "Mark the Write launch email task in Slino as done.",
-              "tools_triggered": "query_pages, patch_pages",
+              "tools_triggered": "list_workspaces, query_pages, patch_pages",
               "expected_behavior": "Finds the Write launch email task and sets its Status to Done using the Done option ID; the change shows in the app."
             },
             {
               "description": "Create a tracker with a board",
-              "prompt": "Create a reading tracker in Slino for three books I want to read: Dune, Piranesi, and Middlemarch, with a board by status.",
-              "tools_triggered": "list_types, create_types, create_pages, create_views",
-              "expected_behavior": "Reuses or creates a Book Type with a Status Select, creates a views Page holding the three books, and adds a board View grouped by Status."
+              "prompt": "Create a new reading tracker in Slino called Next Reads. Add The Left Hand of Darkness, Sea of Tranquility, and The Fifth Season as books I want to read. Add a board grouped by status.",
+              "tools_triggered": "list_workspaces, query_pages, list_types, create_pages, and either list_views with patch_views or create_views",
+              "expected_behavior": "Creates Next Reads as a Views Page with the three books as sub-pages, reusing the existing Book Type instead of creating a new one, with each book's Status set to Want to read. Next Reads shows one board grouped by Status, with all three books in the Want to read lane and no separate Sub-pages list. Returns the tracker link without an inline preview."
             },
             {
-              "description": "Show Pages visually",
-              "prompt": "Show me my Reading list in Slino.",
-              "tools_triggered": "query_pages, show_pages",
-              "expected_behavior": "Finds the Reading list Page and renders it with the Slino widget."
+              "description": "Preview Pages in the chat on request",
+              "prompt": "Show me my Slino Reading list here in the chat.",
+              "tools_triggered": "list_workspaces, query_pages, show_pages",
+              "expected_behavior": "Finds the Reading list Page and renders it once with the Slino widget in the chat."
             }
           ],
           "negative": [
             {
-              "description": "Unrelated request",
+              "description": "Unrelated request. Respond to the weather question using an appropriate source if available. Do not query or change Slino.",
               "prompt": "What's the weather in Rome today?"
             },
             {
-              "description": "General writing with no workspace intent",
+              "description": "General writing with no workspace intent. Write the poem in the chat. Do not read from Slino or save the poem unless the user asks.",
               "prompt": "Write me a short poem about autumn."
             },
             {
-              "description": "Bulk permanent deletion",
+              "description": "Bulk permanent deletion. Explain that Slino's plugin can move Pages to reversible Trash and permanent deletion is only available in Slino. Do not call a write tool or substitute a bulk trash operation.",
               "prompt": "Permanently delete everything in my Slino workspace."
             }
           ]
         }
       },
       "publication": {
-        "countries": []
+        "countries": [],
+        "release_notes": "Initial release for ChatGPT and Codex. Search, save, and update Slino Pages, build trackers with live Views, and keep project notes in an Overview tab."
       }
     }
   }
