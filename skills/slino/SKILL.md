@@ -67,21 +67,33 @@ Each call is a network round trip, so use as few as the task needs.
   Put the writing on a separate text Page and use a `page` layout to show it
   as a tab beside a table, list, or board.
 
-For a launch tracker, create a Views Page and put the checklists in text
-sub-pages with the Task Type. Add a text sub-page called **Overview** for
-shared decisions. Call `list_views` after adding the sub-pages. If Slino
-already added a **Sub-pages** View, use `patch_views` with its current version
-to turn it into the **Launches** table. Otherwise create the table with
-`create_views`. Filter by the parent Page and Task Type so the Overview stays
-out of the table. Show the Task Type's Status property so the table reads
-status directly from each Task. Add an **Overview** tab with `create_views`
-using `presentation: {layout: "page", pageId: OVERVIEW_ID, properties: []}`.
+For a launch tracker, create the Views Page, then its **Launches** table with
+`create_views` before adding sub-pages. Filter the table by the parent Page
+and the Task Type: a View filtered by the parent stops Slino from adding its
+own **Sub-pages** list, and the Type filter keeps the Overview out of the
+table. Show the Task Type's Status property so the table reads status directly
+from each Task. Then add the launches as text sub-pages with the Task Type,
+holding their checklists, and a text sub-page called **Overview** for shared
+decisions. Add an **Overview** tab with `create_views` using
+`presentation: {layout: "page", pageId: OVERVIEW_ID, properties: []}`.
 
-To convert a text Page into a Views Page through MCP, first save and verify
-its Markdown in a text sub-page. Then use `patch_pages` with the original
-Page's current `expectedVersion`, `kind: "views"`, and `body: ""`. Configure
-its Views as above. If you get a version conflict, check the original Page
-for new writing and preserve it in the sub-page before retrying.
+To convert a text Page into a Views Page through MCP, do what Slino's own
+conversion does:
+
+1. Copy its Markdown into a new text sub-page titled "TITLE notes" and read it
+   back to check that nothing was lost.
+2. Use `patch_pages` with the original Page's current `expectedVersion`,
+   `kind: "views"`, and `body: ""`. If you get a version conflict, check the
+   original Page for new writing and copy it into the notes before retrying.
+3. Call `list_views`. Slino adds a **Sub-pages** View to a converted Page with
+   sub-pages. If the notes are its only sub-page, delete that View with
+   `delete_views`.
+4. Add a **Notes** tab with a `page` layout showing the notes. If other tabs
+   remain, make Notes the first tab by patching every tab's position in one
+   `patch_views` call.
+
+Then add the Views the Page needs. Change a kept **Sub-pages** View instead of
+adding another View of the same sub-pages.
 
 ## Files
 
@@ -133,7 +145,9 @@ Fix the cause and retry once; if it still fails, tell the user what failed.
   put one back with `restore_page_revision`. Restoring adds a new revision and
   keeps everything after it.
 - `trash_pages` is reversible and takes sub-pages with it; restore with
-  `patch_pages`. Only a person can delete permanently.
+  `patch_pages`. Only a person can delete permanently, in Slino. When asked to
+  delete permanently, say so, and don't trash Pages instead unless the user
+  asks.
 - Confirm with the user before trashing Pages, or restoring a revision, they
   did not explicitly name.
 
