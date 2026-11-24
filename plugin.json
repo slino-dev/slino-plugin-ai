@@ -75,15 +75,15 @@
             },
             {
               "description": "Create a tracker with a board",
-              "prompt": "Create a new reading tracker in Slino called Next Reads. Add The Left Hand of Darkness, Sea of Tranquility, and The Fifth Season as books I want to read. Show a board grouped by status.",
+              "prompt": "Create a new reading tracker in Slino called Next Reads. Add The Left Hand of Darkness, Sea of Tranquility, and The Fifth Season as books I want to read. Add a board grouped by status.",
               "tools_triggered": "list_workspaces, query_pages, list_types, create_pages, and either list_views with patch_views or create_views",
-              "expected_behavior": "Creates Next Reads as a Views Page with the three books as sub-pages, reusing the existing Book Type instead of creating a new one, with each book's Status set to Want to read. Next Reads shows one board grouped by Status, with all three books in the Want to read lane and no separate Sub-pages list. Returns the tracker link."
+              "expected_behavior": "Creates Next Reads as a Views Page with the three books as sub-pages, reusing the existing Book Type instead of creating a new one, with each book's Status set to Want to read. Next Reads shows one board grouped by Status, with all three books in the Want to read lane and no separate Sub-pages list. Returns the tracker link without an inline preview."
             },
             {
-              "description": "Show Pages visually",
-              "prompt": "Show me my Reading list in Slino.",
+              "description": "Preview Pages in the chat on request",
+              "prompt": "Show me my Slino Reading list here in the chat.",
               "tools_triggered": "list_workspaces, query_pages, show_pages",
-              "expected_behavior": "Finds the Reading list Page and renders it with the Slino widget."
+              "expected_behavior": "Finds the Reading list Page and renders it once with the Slino widget in the chat."
             }
           ],
           "negative": [

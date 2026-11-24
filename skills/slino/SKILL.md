@@ -139,8 +139,9 @@ Fix the cause and retry once; if it still fails, tell the user what failed.
 
 ## Finishing
 
-Link every Page you mention, create, or change using its `url`. When seeing
-the result helps, call `show_pages` once at the end with the final Pages.
+Link every Page you mention, create, or change using its `url`. Call
+`show_pages` only when the user asks to see, show, or preview Pages here in
+the chat, once at the end with the final Pages. Otherwise the link is enough.
 
 ## Common requests
 
