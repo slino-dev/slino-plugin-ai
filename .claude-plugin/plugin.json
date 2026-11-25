@@ -1,5 +1,6 @@
 {
   "name": "slino",
+  "displayName": "Slino",
   "version": "1.0.0",
   "description": "Read, create, and organize Pages, Types, and Views in your Slino workspace.",
   "author": {
@@ -18,5 +19,9 @@
     "workspace",
     "productivity"
   ],
-  "privacyPolicyUrl": "https://slino.app/privacy"
+  "icon": "./assets/logo.png",
+  "documentationUrl": "https://slino.app/connect",
+  "supportUrl": "https://slino.app/support",
+  "privacyPolicyUrl": "https://slino.app/privacy",
+  "termsOfServiceUrl": "https://slino.app/terms"
 }
