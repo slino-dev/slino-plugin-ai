@@ -53,6 +53,7 @@
       },
       "onboardingSkill": "./skills/slino/SKILL.md",
       "review": {
+        "demo_recording_url": "https://www.youtube.com/watch?v=g_rtnTP54Kk",
         "test_cases": {
           "positive": [
             {
