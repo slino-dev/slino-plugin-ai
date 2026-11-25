@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   openai:
@@ -26,7 +26,9 @@ jobs:
       - run: npm ci --prefix scripts
       - name: Build the submission ZIP
         id: zip
-        run: echo "path=$(scripts/build-openai-zip.sh)" >> "$GITHUB_OUTPUT"
+        run: |
+          path=$(scripts/build-openai-zip.sh)
+          echo "path=$path" >> "$GITHUB_OUTPUT"
       - name: Check the unzipped package
         run: |
           unzip -q "${{ steps.zip.outputs.path }}" -d "$RUNNER_TEMP/package"
