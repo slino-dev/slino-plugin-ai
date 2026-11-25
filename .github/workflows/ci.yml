@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  openai:
+    name: OpenAI package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: scripts/package-lock.json
+      - run: npm ci --prefix scripts
+      - name: Build the submission ZIP
+        id: zip
+        run: echo "path=$(scripts/build-openai-zip.sh)" >> "$GITHUB_OUTPUT"
+      - name: Check the unzipped package
+        run: |
+          unzip -q "${{ steps.zip.outputs.path }}" -d "$RUNNER_TEMP/package"
+          node scripts/check-openai-package.mjs "$RUNNER_TEMP/package"
+      - uses: actions/upload-artifact@v7
+        with:
+          path: ${{ steps.zip.outputs.path }}
+          archive: false
+
+  claude:
+    name: Claude plugin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: claude plugin validate --strict --profile directory
+        run: npx -y @anthropic-ai/claude-code@stable plugin validate --strict --profile directory .
+
+  shared:
+    name: Shared files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Manifests agree on name, version, and description
+        run: jq -e -s 'map({name, version, description}) | unique | length == 1' plugin.json .claude-plugin/plugin.json .cursor-plugin/plugin.json
+      - name: MCP configs point at the same server
+        run: jq -e -s '[.[].mcpServers[].url] | unique | length == 1' mcp.json .mcp.json .cursor-plugin/plugin.json
+      - name: No whitespace errors
+        run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
