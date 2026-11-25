@@ -47,7 +47,7 @@ jobs:
         with:
           node-version: 24
       - name: claude plugin validate --strict --profile directory
-        run: npx -y @anthropic-ai/claude-code@stable plugin validate --strict --profile directory .
+        run: npx -y @anthropic-ai/claude-code@stable plugin validate --strict --profile directory claude
 
   shared:
     name: Shared files
@@ -55,8 +55,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Manifests agree on name, version, and description
-        run: jq -e -s 'map({name, version, description}) | unique | length == 1' plugin.json .claude-plugin/plugin.json .cursor-plugin/plugin.json
+        run: jq -e -s 'map({name, version, description}) | unique | length == 1' plugin.json claude/.claude-plugin/plugin.json .cursor-plugin/plugin.json
       - name: MCP configs point at the same server
-        run: jq -e -s '[.[].mcpServers[].url] | unique | length == 1' mcp.json .mcp.json .cursor-plugin/plugin.json
+        run: jq -e -s '[.[].mcpServers[].url] | unique | length == 1' mcp.json claude/.mcp.json .cursor-plugin/plugin.json
+      - name: The Claude folder's copies match the shared files
+        run: |
+          cmp LICENSE claude/LICENSE
+          cmp skills/slino/SKILL.md claude/skills/slino/SKILL.md
+          cmp assets/logo.png claude/assets/logo.png
       - name: No whitespace errors
         run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
