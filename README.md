@@ -51,3 +51,4 @@ See [slino.app/support](https://slino.app/support) or email
 | `.claude-plugin/plugin.json`, `.mcp.json` | Claude |
 | `skills/slino/SKILL.md` | All of them |
 | `assets/` | Logos and icons |
+| `scripts/`, `.github/workflows/` | CI checks; `scripts/build-openai-zip.sh` builds the OpenAI submission ZIP from the last commit |
