@@ -3,9 +3,9 @@
 // https://developers.openai.com/plugins/deploy/submission-errors
 // Usage: node scripts/check-openai-package.mjs <package-dir>
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs"
-import { join } from "node:path"
+import { join, relative } from "node:path"
 import Ajv from "ajv/dist/2020.js"
-import addFormats from "ajv-formats"
+import { imageSize } from "image-size"
 import { parse as parseYaml } from "yaml"
 
 const root = process.argv[2]
@@ -20,7 +20,6 @@ const readJson = (path) => JSON.parse(readFileSync(join(root, path), "utf8"))
 const isObject = (value) => typeof value === "object" && value !== null && !Array.isArray(value)
 
 const ajv = new Ajv({ strict: false, allErrors: true })
-addFormats(ajv)
 const plugin = readJson("plugin.json")
 const mcp = readJson("mcp.json")
 for (const [file, data] of [
@@ -32,11 +31,14 @@ for (const [file, data] of [
   if (!validate(data)) fail(`${file} fails the Agent Plugins schema: ${ajv.errorsText(validate.errors, { dataVar: file })}`)
 }
 
-// Supported text excludes control characters and Unicode line or paragraph
-// separators; only multiline fields may contain line breaks.
+// Supported text excludes control characters (tabs included), Unicode line or
+// paragraph separators, and invisible formatting characters; only multiline
+// fields may contain line breaks. The zero-width joiner stays allowed for emoji.
 function checkText(label, value, max, { multiline = false } = {}) {
   if (typeof value !== "string" || value.trim() === "") return fail(`${label} is required and must be non-empty text`)
-  const unsupported = multiline ? /[\u0000-\u0008\u000b-\u001f\u007f\u2028\u2029]/ : /[\u0000-\u001f\u007f\u2028\u2029]/
+  const unsupported = multiline
+    ? /[\u0000-\u0009\u000b-\u001f\u007f\u2028\u2029\u200b\u200c\u200e\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/
+    : /[\u0000-\u001f\u007f\u2028\u2029\u200b\u200c\u200e\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/
   if (unsupported.test(value)) fail(`${label} contains ${multiline ? "unsupported characters" : "a line break or unsupported characters"}`)
   const length = [...value].length
   if (length > max) fail(`${label} is ${length} characters; the limit is ${max}`)
@@ -82,10 +84,19 @@ function checkImage(label, path, { required }) {
   if (!file) return
   const bytes = readFileSync(file)
   if (bytes.length > 5 * 1024 * 1024) fail(`${label} (${path}) is larger than 5 MiB`)
-  if (!path.toLowerCase().endsWith(".png")) return fail(`${label} (${path}): this check only reads PNG dimensions; extend it for other formats`)
-  if (!bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return fail(`${label} (${path}) is not a PNG file`)
-  const width = bytes.readUInt32BE(16)
-  const height = bytes.readUInt32BE(20)
+  const extension = { png: "png", jpg: "jpg", jpeg: "jpg", webp: "webp", svg: "svg" }[path.split(".").pop().toLowerCase()]
+  if (!extension) return fail(`${label} (${path}) must be a .png, .jpg, .jpeg, .webp, or .svg file`)
+  let size
+  try {
+    size = imageSize(bytes)
+  } catch {
+    return fail(`${label} (${path}) is not a readable image`)
+  }
+  if (size.type !== extension) return fail(`${label} (${path}) is a ${size.type} file; its extension must match`)
+  // image-size converts SVG units to pixels, but OpenAI wants plain numbers.
+  if (size.type === "svg" && /<svg\b[^>]*\s(?:width|height)="[^"]*[^\d."\s]/.test(bytes.toString("utf8")))
+    fail(`${label} (${path}): SVG width and height must be plain numbers without units`)
+  const { width, height } = size
   if (width !== height) fail(`${label} (${path}) is ${width}×${height}; it must be square`)
   if (Math.min(width, height) < 48 || Math.max(width, height) > 4096) fail(`${label} (${path}) is ${width}×${height}; it must be between 48 and 4096 pixels`)
 }
@@ -134,7 +145,7 @@ if (!isObject(openai)) {
   if (prompts.length > 3) fail("interface.defaultPrompt must have at most 3 prompts")
   prompts.forEach((prompt, i) => {
     checkText(`interface.defaultPrompt[${i}]`, prompt, 128)
-    if (prompt.includes("@")) fail(`interface.defaultPrompt[${i}] must not contain an @mention`)
+    if (/(^|\s)@\w/.test(prompt)) fail(`interface.defaultPrompt[${i}] must not contain an @mention`)
   })
   const normalized = prompts.map((prompt) => prompt.normalize("NFKC").trim().replace(/\s+/g, " "))
   if (new Set(normalized).size !== normalized.length) fail("interface.defaultPrompt entries must be unique")
@@ -175,7 +186,10 @@ if (!isObject(openai)) {
 // Plugin-level test cases require exactly one MCP server.
 const servers = Object.entries(mcp.mcpServers ?? {})
 if (servers.length !== 1) fail(`mcp.json declares ${servers.length} MCP servers; review.test_cases needs exactly one`)
-for (const [name, server] of servers) checkUrl(`mcp.json mcpServers.${name}.url`, server.url, 2048)
+for (const [name, server] of servers) {
+  checkUrl(`mcp.json mcpServers.${name}.url`, server.url, 2048)
+  if (Object.keys(server.headers ?? {}).length > 0) fail(`mcp.json mcpServers.${name}.headers must be empty; public submissions reject server headers`)
+}
 
 // Skills
 const skillsDir = join(root, "skills")
@@ -213,6 +227,10 @@ for (const dir of skillDirs) {
   skillNames.add(frontmatter.name)
   if (`${plugin.name}:${frontmatter.name}`.length > 64) fail(`${label}: ${plugin.name}:${frontmatter.name} is longer than 64 characters`)
 }
+
+// unzip restores symlinks, which OpenAI rejects as archive entries.
+for (const entry of readdirSync(root, { recursive: true, withFileTypes: true }))
+  if (!entry.isFile() && !entry.isDirectory()) fail(`${relative(root, join(entry.parentPath, entry.name))} must be a regular file or directory`)
 
 if (errors.length > 0) {
   for (const error of errors) console.error(`✗ ${error}`)
