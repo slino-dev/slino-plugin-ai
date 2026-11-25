@@ -48,7 +48,10 @@ See [slino.app/support](https://slino.app/support) or email
 | --- | --- |
 | `plugin.json`, `mcp.json` | Agent Plugins format: OpenAI (ChatGPT and Codex) |
 | `.cursor-plugin/plugin.json` | Cursor and Grok Bot |
-| `.claude-plugin/plugin.json`, `.mcp.json` | Claude |
+| `claude/` | Claude, submitted as this folder |
 | `skills/slino/SKILL.md` | All of them |
 | `assets/` | Logos and icons |
+
+Claude's directory accepts only the plugin's own files, so `claude/` holds
+copies of the license, the skill, and the logo; CI checks that they match.
 | `scripts/`, `.github/workflows/` | CI checks; `scripts/build-openai-zip.sh` builds the OpenAI submission ZIP from the last commit |
