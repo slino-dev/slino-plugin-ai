@@ -115,6 +115,25 @@ conversion does:
 Then add the Views the Page needs. Change a kept **Sub-pages** View instead of
 adding another View of the same sub-pages.
 
+## Generated Views
+
+A generated View is a layout you write as HTML, following the contract in
+the description of `presentation.code`. Use it when people act on Pages in a
+way built-in layouts can't show, such as ticking off a checklist with
+progress, running a drill, or reading a readiness board.
+
+- A layout saves only Page properties, so keep everything worth keeping
+  there. Add the properties to the Type first, such as a Done checkbox or a
+  Last reviewed date.
+- Set `properties` as well. Slino shows those columns as a table when the
+  layout fails to load, and other chats, including `show_pages`, show the
+  View as that table. Link the Page so the user opens the layout in Slino.
+- To change a layout, read its current code with `list_views`, then send all
+  of the edited code with `patch_views`, keeping whatever the request
+  doesn't touch.
+- To undo a layout change, use `list_view_revisions`, `read_view_revision`,
+  and `restore_view_revision`.
+
 ## Files
 
 Upload with `upload_files`, then reference the file from a Page body as
