@@ -141,7 +141,10 @@ Fix the cause and retry once; if it still fails, tell the user what failed.
 - Every change is kept in Page history. To see or undo what changed, call
   `list_page_revisions`, read the candidates with `read_page_revision`, and
   put one back with `restore_page_revision`. Restoring adds a new revision and
-  keeps everything after it.
+  keeps everything after it. The `current` revision is the Page as it is now,
+  so restoring it fails with `REVISION_IS_CURRENT`. One client's edits in
+  quick succession share a revision, so an edit you just made may have no
+  earlier revision of its own to restore.
 - `trash_pages` is reversible and takes sub-pages with it; restore with
   `patch_pages`. Only a person can delete permanently, in Slino. When asked to
   delete permanently, say so, and don't trash Pages instead unless the user
