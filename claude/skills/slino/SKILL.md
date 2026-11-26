@@ -6,10 +6,11 @@ description: Organize notes, tasks, projects, and knowledge in the user's Slino 
 # Working in Slino
 
 Slino is a workspace that people browse and edit while you keep it organized.
-Everything is a Page. A Type gives recurring Pages a shape, and a View shows a
-saved query of Pages as a table, board, list, gallery, or calendar. The tools
-and their descriptions hold the exact rules; this skill covers how to use them
-well.
+Everything is a Page. A Type gives recurring Pages a shape, and a View is a tab
+on a views Page that shows a saved query of Pages as a table, board, list,
+gallery, calendar, or generated layout, or shows one text Page's writing. The
+tools and their descriptions hold the exact rules; this skill covers how to
+use them well.
 
 ## Before you write
 
@@ -61,11 +62,28 @@ Each call is a network round trip, so use as few as the task needs.
 
 ## Text Pages and Views Pages
 
-- Use `kind: "text"` for writing such as notes, runbooks, and Task checklists.
-  A text Page can have sub-pages.
-- Use `kind: "views"` for a collection or dashboard that shows live results.
-  Put the writing on a separate text Page and use a `page` layout to show it
-  as a tab beside a table, list, or board.
+A Page holds writing or Views, never both.
+
+- Use `kind: "text"` when the writing matters most, such as notes, plans,
+  runbooks, and Task checklists. Its sub-pages, if any, list below the writing.
+- Use `kind: "views"` when the sub-pages matter more than any writing, such as
+  a project's tasks or a collection people browse, sort, or track, or for
+  Pages gathered from across the workspace. Don't create one for a single
+  Page.
+- A views Page has no body. Put its overview on a text sub-page and show it
+  with a `page` View, usually as the first tab. A text Page can't show a View:
+  link to the views Page from its body, or convert it as below when the user
+  wants Views on that Page.
+
+Pick each View's layout from what people do with the Pages:
+
+- `table` to compare properties; `list` to scan titles.
+- `board` to move Pages through a Select property such as Status.
+- `calendar` for Pages with a date property, and an end date for spans.
+- `gallery` for Pages best recognized by an image or file.
+- `page` for a text Page's writing beside the other tabs.
+- `generated` only for what these can't show, such as a checklist with
+  progress, a drill, or a readiness board.
 
 For a launch tracker, create the Views Page, then its **Launches** table with
 `create_views` before adding sub-pages. Filter the table by the parent Page
@@ -75,7 +93,9 @@ table. Show the Task Type's Status property so the table reads status directly
 from each Task. Then add the launches as text sub-pages with the Task Type,
 holding their checklists, and a text sub-page called **Overview** for shared
 decisions. Add an **Overview** tab with `create_views` using
-`presentation: {layout: "page", pageId: OVERVIEW_ID, properties: []}`.
+`presentation: {layout: "page", pageId: OVERVIEW_ID, properties: []}`, then
+make it the first tab by patching both tabs' positions in one `patch_views`
+call.
 
 To convert a text Page into a Views Page through MCP, do what Slino's own
 conversion does:
@@ -164,9 +184,12 @@ the chat, once at the end with the final Pages. Otherwise the link is enough.
   clear title, an emoji, and the content in clean Markdown.
 - **Task tracker**: reuse or create a Task Type with Status, Priority, and Due
   date; create a views Page with a board grouped by Status and a table sorted
-  by Due date; add the tasks under it.
-- **Plan from a conversation**: one parent Page with the goal and decisions,
-  and a sub-page per workstream or a task per action item.
+  by Due date, both filtered by the Task Type and the Page as parent; add the
+  tasks under it.
+- **Plan from a conversation**: a text Page with the goal and decisions, and a
+  sub-page per workstream. When its action items matter more than the
+  writing, build it like the launch tracker, with the goal and decisions on
+  its Overview.
 - **Review**: query Pages updated or due in the period, then summarize what
   changed, what is overdue, and what is next, linking each Page.
 - **What changed**: "what did the AI change in my plan?" → list the Page's
