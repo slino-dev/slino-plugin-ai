@@ -128,17 +128,34 @@ progress, running a drill, or reading a readiness board.
 - Set `properties` as well. Slino shows those columns as a table when the
   layout fails to load, and other chats, including `show_pages`, show the
   View as that table. Link the Page so the user opens the layout in Slino.
-- To change a layout, read its current code with `list_views`, then send all
-  of the edited code with `patch_views`, keeping whatever the request
-  doesn't touch.
-- To undo a layout change, use `list_view_revisions`, `read_view_revision`,
-  and `restore_view_revision`.
+- Build a large layout in steps. Create the View with a working core, such as
+  the main list and its one primary action, then add each further section
+  with `codeEdits` in `patch_views`. Small steps are easier to get right, and
+  a failed step costs only that step.
+- Read the code before editing it. `list_views` returns a long layout in
+  parts: while a View's `nextCodeOffset` is not null, call `list_views` again
+  with its `viewId` and `codeOffset` set to `nextCodeOffset`, and join the
+  parts in order. Never save one part as the whole code.
+- Fix or extend a layout with `codeEdits`, each `oldText` copied exactly from
+  the saved code with enough around it to match once. Send all of `code`
+  again only to replace most of the layout.
+- To change only settings such as `properties`, send `presentation` without
+  `code`; the View keeps its saved code.
+- Each code write is a layout revision; the one whose `toVersion` is the
+  version you read before a change holds the layout from before it. When a
+  change breaks the layout or the user wants an earlier one, find it with
+  `list_view_revisions`, read it
+  with `read_view_revision`, which returns long code in parts like
+  `list_views`, and put it back with `restore_view_revision` instead of
+  rewriting it.
 
 ## Files
 
 Upload with `upload_files`, then reference the file from a Page body as
 `![alt](/files/FILE_ID)` for images or `[name](/files/FILE_ID)` otherwise, or
-from a file property. Pick the path that keeps the bytes out of your context:
+from a file property. Pages show only uploaded images; an image from another
+site shows as a link, so upload it from its URL first. Pick the path that
+keeps the bytes out of your context:
 
 - **The user attached it in ChatGPT**: pass it in `attachedFiles`.
 - **You can run shell commands** and reach the file: ask for a link with
@@ -169,6 +186,9 @@ To show the user a file, use its `signedUrl` in your reply, never in a Page.
   `propertyDefinitions`.
 - `TYPE_NAME_TAKEN`: that Type already exists; use it.
 - `PAGE_KIND_CONFLICT`: text goes on a text Page and Views on a views Page.
+- `INVALID_BODY_EDIT` or `INVALID_CODE_EDIT`: read the current body or code
+  again and copy each `oldText` exactly, with more around it if it matched
+  several places.
 - `PAGINATION_RESTART_REQUIRED`: query again without the cursor.
 - `UPLOAD_LINK_USED` from an upload link: the file already arrived; use its
   ID. `UPLOAD_LINK_INVALID`: the link expired; ask for a new one.
