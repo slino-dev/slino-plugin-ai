@@ -16,7 +16,10 @@
   "logo": "assets/logo.svg",
   "mcpServers": {
     "slino": {
-      "url": "https://slino.app/mcp"
+      "url": "https://slino.app/mcp",
+      "auth": {
+        "CLIENT_ID": "https://cursor.com/oauth/mcp-client.json"
+      }
     }
   }
 }
