@@ -38,6 +38,10 @@ Each call is a network round trip, so use as few as the task needs.
 - Let the server filter. Use `typeId`, `propertyEquals`, `propertyContains`,
   `parentId`, `sort`, and a small `limit` instead of fetching broadly and
   filtering the results yourself.
+- Each Page's `changedAt` says when each property took its current value. To
+  find when something happened, such as Tasks finished this month, filter
+  with a `changed` condition and the user's `timeZone`, which also sets
+  `today` when you omit it, instead of reading history or using `updatedAt`.
 - Read bodies only when the task needs the text. Summaries and lists can use
   `bodyPreview`; `read_pages` takes up to five Pages per call.
 - Make independent reads at the same time when your client allows it.
