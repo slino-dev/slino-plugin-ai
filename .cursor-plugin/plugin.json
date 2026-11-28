@@ -1,5 +1,6 @@
 {
   "name": "slino",
+  "displayName": "Slino",
   "version": "1.0.0",
   "description": "Read, create, and organize Pages, Types, and Views in your Slino workspace.",
   "author": {
@@ -10,6 +11,8 @@
   "repository": "https://github.com/slino-dev/slino-plugin-ai",
   "license": "MIT",
   "keywords": ["notes", "tasks", "projects", "knowledge base", "workspace", "productivity"],
+  "category": "integrations",
+  "tags": ["notes", "tasks", "knowledge base", "mcp"],
   "logo": "assets/logo.svg",
   "mcpServers": {
     "slino": {
